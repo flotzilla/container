@@ -1,5 +1,5 @@
 {
-    "name": "bbyte/container",
+    "name": "flotzilla/container",
     "description": "PHP FIG PSR-11 container implementation",
     "keywords": ["container", "dependency", "injection", "di", "service", "provider"],
     "type": "library",
