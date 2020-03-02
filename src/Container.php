@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace bbyte\Container;
+namespace flotzilla\Container;
 
-use bbyte\Container\Exceptions\ContainerNotFoundException;
-use bbyte\Container\Exceptions\ContainerServiceInitializationException;
+use flotzilla\Container\Exceptions\ContainerNotFoundException;
+use flotzilla\Container\Exceptions\ContainerServiceInitializationException;
 use Closure;
 use Psr\Container\ContainerInterface;
 

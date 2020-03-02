@@ -14,7 +14,7 @@
     },
     "authors": [
         {
-            "name": "bbyte",
+            "name": "flotzilla",
             "email": "null.0.byte@gmail.com",
             "role": "Developer",
             "homepage": "http://lazy-tech.net"
@@ -22,12 +22,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "bbyte\\Container\\": "src"
+            "flotzilla\\Container\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "bbyte\\Container\\Test\\": "tests"
+            "flotzilla\\Container\\Test\\": "tests"
         }
     },
     "scripts": {

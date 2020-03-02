@@ -18,7 +18,7 @@ $ composer install flotzilla/container
 
 Init service container with constructor parameters
 ```php
- $containerStack = new \bbyte\Container\Container(
+ $containerStack = new \flotzilla\Container\Container(
      [
          'ConfigDI' => function () use ($x) { return new \stdClass($x);},  // some Service unique DI key 
          'AnotherDi' => function () { return new Service;}
@@ -28,7 +28,7 @@ Init service container with constructor parameters
 
 Or with setter
 ```php
-use \bbyte\Container\Container;
+use \flotzilla\Container\Container;
 $container = new Container();
 $container->set('LoggerDI', function () { return new Logger();});
 ```

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace bbyte\Container\Test;
+namespace flotzilla\Container\Test;
 
-use bbyte\Container\Container;
-use bbyte\Container\Exceptions\ContainerNotFoundException;
-use bbyte\Container\Exceptions\ContainerServiceInitializationException;
+use flotzilla\Container\Container;
+use flotzilla\Container\Exceptions\ContainerNotFoundException;
+use flotzilla\Container\Exceptions\ContainerServiceInitializationException;
 use PHPUnit\Framework\TestCase;
 
 class ContainerTest extends TestCase

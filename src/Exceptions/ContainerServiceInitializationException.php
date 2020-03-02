@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace bbyte\Container\Exceptions;
+namespace flotzilla\Container\Exceptions;
 
 use Psr\Container\ContainerExceptionInterface;
 
