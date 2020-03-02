@@ -1,3 +1,5 @@
+[![MIT License][license-shield]][license-url]
+
 # Container
 Dependency injection PHP FIG PSR-11 container implementation
 
@@ -58,3 +60,6 @@ $ composer test
 ## License
 
 The MIT License (MIT). Please see [License File](https://github.com/flotzilla/container/blob/master/LICENCE.md) for more information.
+
+[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=flat-square
+[license-url]: https://github.com/flotzilla/container/blob/master/LICENCE.md
