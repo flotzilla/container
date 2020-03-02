@@ -44,9 +44,11 @@ Get your component in code
 ```php
 class Controller
 {
+    private $container; 
     public function __construct(ContainerInterface $container)
     {
-        $container->get('ServiceDI'); // some Service unique DI key    
+        $this->container = $container;
+        $this->container->get('ServiceDI'); // some Service unique DI key    
     }
 }
 ```
