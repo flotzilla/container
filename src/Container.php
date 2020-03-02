@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace flotzilla\Container;
 
+use Closure;
 use flotzilla\Container\Exceptions\ContainerNotFoundException;
 use flotzilla\Container\Exceptions\ContainerServiceInitializationException;
-use Closure;
-use Psr\Container\ContainerInterface;
 
+/**
+ * PSR-11 compliant container implementation
+ * @package flotzilla\Container
+ */
 class Container implements ContainerInterface, \Countable
 {
     /**
@@ -40,8 +43,7 @@ class Container implements ContainerInterface, \Countable
     }
 
     /**
-     * @param string $id
-     * @param Closure $serviceFactory
+     * @inheritdoc
      */
     public function set(string $id, Closure $serviceFactory): void
     {
@@ -49,6 +51,22 @@ class Container implements ContainerInterface, \Countable
 
         // remove previous
         unset($this->services[$id]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function listServiceIds(): array
+    {
+        return array_keys($this->serviceFactories);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function count(): int
+    {
+        return count($this->services);
     }
 
     /**
@@ -86,22 +104,5 @@ class Container implements ContainerInterface, \Countable
     {
         $serviceFactory = $this->serviceFactories[$id];
         return $serviceFactory($this);
-    }
-
-    /**
-     * Retrieve services id's
-     * @return array
-     */
-    public function listServiceIds(): array
-    {
-        return array_keys($this->serviceFactories);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function count(): int
-    {
-        return count($this->services);
     }
 }
