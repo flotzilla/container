@@ -1,5 +1,5 @@
 # Container
-Dependency injection component
+Dependency injection PHP FIG PSR-11 container implementation
 
 ## Requirements
 
