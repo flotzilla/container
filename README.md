@@ -40,14 +40,12 @@ $container->set('LoggerDI', function (ContainerInterface $container) {
 
 Get your component in code
 ```php
-
 class Controller
 {
-public function __construct(    
-        ContainerInterface $container
-    ){
-    $container->get('ServiceDI'); // some Service unique DI key    
-}
+    public function __construct(ContainerInterface $container)
+    {
+        $container->get('ServiceDI'); // some Service unique DI key    
+    }
 }
 ```
 

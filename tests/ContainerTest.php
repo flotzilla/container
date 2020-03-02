@@ -84,9 +84,11 @@ class ContainerTest extends TestCase
     {
         $this->expectException(ContainerServiceInitializationException::class);
 
-        new Container([
+        new Container(
+            [
             self::PLAIN_OBJECT => 'wrong body'
-        ]);
+            ]
+        );
     }
 
     public function testSetter()
@@ -108,7 +110,11 @@ class ContainerTest extends TestCase
     {
         $value = 123;
         $container = new Container();
-        $container->set('test', function () use ($value) {return $value;});
+        $container->set(
+            'test', function () use ($value) {
+                return $value;
+            }
+        );
         $this->assertEquals($value, $container->get('test'));
     }
 
@@ -118,7 +124,11 @@ class ContainerTest extends TestCase
 
         $value = 123;
         $container = new Container();
-        $container->set('test', function () use ($value) {return $value;});
+        $container->set(
+            'test', function () use ($value) {
+                return $value;
+            }
+        );
         $this->assertEquals($value, $container->get('test1'));
     }
 }
