@@ -1,0 +1,41 @@
+{
+    "name": "bbyte/container",
+    "description": "PHP FIG PSR-11 container implementation",
+    "keywords": ["container", "dependency", "injection", "di", "service", "provider"],
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^7.1",
+        "psr/container": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7",
+        "phpstan/phpstan": "^0.12.11"
+    },
+    "authors": [
+        {
+            "name": "bbyte",
+            "email": "null.0.byte@gmail.com",
+            "role": "Developer",
+            "homepage": "http://lazy-tech.net"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "bbyte\\Container\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "bbyte\\Container\\Test\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": [
+            "phpunit"
+        ],
+        "stan": [
+            "vendor/bin/phpstan analyse -l 4 -c phpstan.neon.dist src"
+        ]
+    }
+}
