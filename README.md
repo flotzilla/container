@@ -14,7 +14,7 @@ $ composer install bbyte/container
 
 ## Usage
 
-Init container with constructor
+Init service container with constructor parameters
 ```php
  $containerStack = new \bbyte\Container\Container(
      [
@@ -24,8 +24,10 @@ Init container with constructor
  );
 ```
 
-Or with setter 
+Or with setter
 ```php
+use \bbyte\Container\Container;
+$container = new Container();
 $container->set('LoggerDI', function () { return new Logger();});
 ```
 
