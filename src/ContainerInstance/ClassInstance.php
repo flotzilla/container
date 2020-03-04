@@ -22,7 +22,7 @@ class ClassInstance implements ContainerInstance
     /**
      * @var bool
      */
-    private $hasConstructor;
+    private $hasConstructor = false;
 
     /**
      * CallableClass constructor.
@@ -42,9 +42,7 @@ class ClassInstance implements ContainerInstance
             throw new ClassIsNotInstantiableException($className);
         }
 
-        $constructor = $this->reflectionClass->getConstructor();
-
-        $this->hasConstructor = !is_null($constructor);
+        $this->hasConstructor = !is_null($this->reflectionClass->getConstructor());
     }
 
     /**
@@ -73,6 +71,9 @@ class ClassInstance implements ContainerInstance
         return $this->reflectionClass->newInstance();
     }
 
+    /**
+     * @inheritDoc
+     */
     public function callWithParameters(array $parameters = [])
     {
         if (!$this->hasConstructor) {

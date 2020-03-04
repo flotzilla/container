@@ -10,17 +10,24 @@ interface ContainerInstance
     const TYPE_CLASS = 'TYPE_CLASS';
 
     /**
+     * Return instance container type
+     *
      * @return mixed
      */
     public function getType();
 
     /**
+     * Call Instance main executor
+     *
      * @return mixed
      */
     public function call();
 
     /**
-     * @param array $parameters
+     * Call executor with parameters
+     *
+     * @param array $parameters parameters to execute with
+     *
      * @return mixed
      */
     public function callWithParameters(array $parameters = []);
@@ -32,6 +39,7 @@ interface ContainerInstance
 
     /**
      * @param array $parameters
+     *
      * @return mixed
      */
     public function setParameters(array $parameters);

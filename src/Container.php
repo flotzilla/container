@@ -23,6 +23,7 @@ class Container implements ContainerInterface, \Countable
     private $services = [];
 
     /**
+     * Container storage for further initialization
      * @var ContainerInstance[]
      */
     private $containerFactories = [];
@@ -60,6 +61,10 @@ class Container implements ContainerInterface, \Countable
             $this->initFromString($id, $serviceParameters);
         } else {
             throw new ContainerServiceInitializationException("Service {$id} cannot be instanced with current parameters");
+        }
+
+        if ($rewrite) {
+            unset($this->services[$id]);
         }
     }
 
@@ -137,10 +142,6 @@ class Container implements ContainerInterface, \Countable
      */
     public function getWithParameters(string $id, array $parameters)
     {
-        if (!$parameters){
-            return $this->get($id);
-        }
-
         if (!$this->has($id)) {
             throw new ContainerNotFoundException($id);
         }
