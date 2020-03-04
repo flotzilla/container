@@ -1,18 +1,4 @@
-[![MIT License][license-shield]][license-url]
-
-# Container
-Dependency injection PHP FIG PSR-11 container implementation
-
-## Requirements
-
-`php > 7.1`
-
-## Install
-via Composer
-
-```bash
-$ composer install flotzilla/container
-```
+# Version 2.0.0
 
 ## Usage
 
@@ -57,15 +43,3 @@ $container->set('ClosureDI', function ($x, $y) { return $x + $y;});
 $logger = $container->getWithParameters('ClosureDI', [1, 2]); // will return 3
 ```
 
-## Testing
-
-```bash
-$ composer test
-```
-
-## License
-
-The MIT License (MIT). Please see [License File](https://github.com/flotzilla/container/blob/master/LICENCE.md) for more information.
-
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=flat-square
-[license-url]: https://github.com/flotzilla/container/blob/master/LICENCE.md
