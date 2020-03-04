@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace flotzilla\Container;
 
 use Closure;
+use flotzilla\Container\ContainerInstance\ClassInstance;
+use flotzilla\Container\ContainerInstance\ClosureInstance;
+use flotzilla\Container\ContainerInstance\ContainerInstance;
 use flotzilla\Container\Exceptions\ContainerNotFoundException;
 use flotzilla\Container\Exceptions\ContainerServiceInitializationException;
 
@@ -20,37 +23,78 @@ class Container implements ContainerInterface, \Countable
     private $services = [];
 
     /**
-     * @var Closure[]
+     * @var ContainerInstance[]
      */
-    private $serviceFactories = [];
+    private $containerFactories = [];
 
     /**
      * Container constructor.
      *
-     * @param array $serviceFactories
-     * @throws ContainerServiceInitializationException
+     * @param array $containerServices
+     * @throws Exceptions\ClassIsNotInstantiableException
+     * @throws \ReflectionException
      */
-    public function __construct(array $serviceFactories = [])
+    public function __construct(array $containerServices = [])
     {
-        foreach ($serviceFactories as $id => $serviceFactory) {
-
-            if (!($serviceFactory instanceof Closure)) {
-                throw new ContainerServiceInitializationException($id);
-            }
-
+        foreach ($containerServices as $id => $serviceFactory) {
             $this->set($id, $serviceFactory);
         }
     }
 
     /**
      * @inheritdoc
+     * @throws \ReflectionException
+     * @throws Exceptions\ClassIsNotInstantiableException
      */
-    public function set(string $id, Closure $serviceFactory): void
+    public function set(string $id, $serviceParameters, bool $rewrite = false): void
     {
-        $this->serviceFactories[$id] = $serviceFactory;
+        if (array_key_exists($id, $this->containerFactories) && !$rewrite) {
+            throw new ContainerServiceInitializationException("Service {$id} is already in container stack");
+        }
 
-        // remove previous
-        unset($this->services[$id]);
+        if ($serviceParameters instanceof Closure) {
+            $this->containerFactories[$id] = new ClosureInstance($serviceParameters);
+        } else if (is_array($serviceParameters)) {
+            $this->initFromArray($id, $serviceParameters);
+        } else if (is_string($serviceParameters)) {
+            $this->initFromString($id, $serviceParameters);
+        } else {
+            throw new ContainerServiceInitializationException("Service {$id} cannot be instanced with current parameters");
+        }
+    }
+
+    /**
+     * @param string $id
+     * @param array $parameters
+     * @throws \ReflectionException
+     * @throws Exceptions\ClassIsNotInstantiableException
+     */
+    private function initFromArray(string $id, array $parameters)
+    {
+        $className = reset($parameters);
+        if (!is_string($className)) {
+            throw new ContainerServiceInitializationException("Service {$id} {$className} parameter should be string");
+        }
+
+        $reflectionClass = $this->initFromString($id, $className);
+
+        if (count($parameters) > 1) {
+            $reflectionClass->setParameters(array_slice($parameters, 1));
+        }
+    }
+
+    /**
+     * @param string $id
+     * @param string $className
+     * @return ContainerInstance
+     * @throws \ReflectionException
+     * @throws Exceptions\ClassIsNotInstantiableException
+     */
+    private function initFromString(string $id, string $className): ContainerInstance
+    {
+        $this->containerFactories[$id] = new ClassInstance($className);
+
+        return $this->containerFactories[$id];
     }
 
     /**
@@ -58,7 +102,7 @@ class Container implements ContainerInterface, \Countable
      */
     public function listServiceIds(): array
     {
-        return array_keys($this->serviceFactories);
+        return array_keys($this->containerFactories);
     }
 
     /**
@@ -66,7 +110,7 @@ class Container implements ContainerInterface, \Countable
      */
     public function count(): int
     {
-        return count($this->services);
+        return count($this->containerFactories);
     }
 
     /**
@@ -91,9 +135,25 @@ class Container implements ContainerInterface, \Countable
     /**
      * @inheritdoc
      */
+    public function getWithParameters(string $id, array $parameters)
+    {
+        if (!$parameters){
+            return $this->get($id);
+        }
+
+        if (!$this->has($id)) {
+            throw new ContainerNotFoundException($id);
+        }
+
+        return $this->containerFactories[$id]->callWithParameters($parameters);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function has($id): bool
     {
-        return isset($this->serviceFactories[$id]);
+        return isset($this->containerFactories[$id]);
     }
 
     /**
@@ -102,7 +162,21 @@ class Container implements ContainerInterface, \Countable
      */
     private function getFromFactory(string $id)
     {
-        $serviceFactory = $this->serviceFactories[$id];
-        return $serviceFactory($this);
+        $serviceFactory = $this->containerFactories[$id];
+
+        if ($params = $serviceFactory->getParameters()) {
+            $resolvedDependencies = [];
+            foreach ($params as $param) {
+                if (is_string($param) && $this->has($param)) {
+                    $resolvedDependencies[] = $this->get($param);
+                } else {
+                    $resolvedDependencies[] = $param;
+                }
+            }
+
+            return $serviceFactory->callWithParameters($resolvedDependencies);
+        }
+
+        return $serviceFactory->call();
     }
 }

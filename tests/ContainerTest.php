@@ -5,130 +5,118 @@ declare(strict_types=1);
 namespace flotzilla\Container\Test;
 
 use flotzilla\Container\Container;
+use flotzilla\Container\Exceptions\ClassIsNotInstantiableException;
 use flotzilla\Container\Exceptions\ContainerNotFoundException;
 use flotzilla\Container\Exceptions\ContainerServiceInitializationException;
+use flotzilla\Container\Test\TestClass\EmptyTestClass;
+use flotzilla\Container\Test\TestClass\TestClass;
+use flotzilla\Container\Test\TestClass\TestClassWithDependecy;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 class ContainerTest extends TestCase
 {
-    const PLAIN_OBJECT = 'PlainObject';
-    private static $objectsStack = [];
+    protected $containers = [];
 
-    public static function setUpBeforeClass()
+    protected function setUp()
     {
-        parent::setUpBeforeClass();
-        self::$objectsStack = [
-            self::PLAIN_OBJECT => function () {
-                return new \stdClass();
-            }
+        $this->containers =             [
+            'EmptyTestClass' => EmptyTestClass::class,
+            'TestClassDI' => [TestClass::class, 'message'],
+            'TestClassDI2' => function () {return new TestClass('test');},
+            'TestClassWithDependecyDI' => [TestClassWithDependecy::class, 'TestClassDI']
         ];
+    }
+
+    public function testEmptyInit()
+    {
+        $container = new Container();
+        $this->assertCount(0, $container);
     }
 
     public function testInit()
     {
-        $container = new Container(self::$objectsStack);
-
-        $this->assertTrue($container->has(self::PLAIN_OBJECT));
+        $container = new Container($this->containers);
+        $this->assertCount(4, $container);
     }
 
-    public function testHasObject()
+    public function testHas()
     {
-        $container = new Container(self::$objectsStack);
-
-        $this->assertTrue($container->has(self::PLAIN_OBJECT));
+        $container = new Container($this->containers);
+        $this->assertTrue($container->has('TestClassDI'));
+        $this->assertTrue($container->has('TestClassDI2'));
+        $this->assertTrue($container->has('EmptyTestClass'));
+        $this->assertTrue($container->has('TestClassWithDependecyDI'));
     }
 
-    public function testHasObjectOnNonExisted()
+    public function testGet()
     {
-        $container = new Container(self::$objectsStack);
+        $container = new Container($this->containers);
 
-        $this->assertFalse($container->has('someval'));
+        $emptyClass = $container->get('EmptyTestClass');
+        $testClass = $container->get('TestClassDI');
+        $testClass2 = $container->get('TestClassDI2');
+        $testClassWithD = $container->get('TestClassWithDependecyDI');
+
+        $this->assertInstanceOf(EmptyTestClass::class, $emptyClass);
+        $this->assertInstanceOf(TestClass::class, $testClass);
+        $this->assertInstanceOf(TestClass::class, $testClass2);
+        $this->assertInstanceOf(TestClassWithDependecy::class, $testClassWithD);
+
+        $this->assertEquals('message', $testClass->getMessage());
+        $this->assertEquals('test', $testClass2->getMessage());
+        $this->assertEquals($testClass, $testClassWithD->getTestClass());
+        $this->assertEquals('message', $testClassWithD->getTestClass()->getMessage());
     }
 
-    public function testHasOnNullValue()
+    public function testGetClosureWithParameter()
     {
-        $container = new Container(self::$objectsStack);
-
-        $this->assertFalse($container->has(null));
-    }
-
-    public function testListServices()
-    {
-        $container = new Container(self::$objectsStack);
-
-        $this->assertTrue(in_array(self::PLAIN_OBJECT, $container->listServiceIds()));
-    }
-
-    public function testListServicesOnNonExisted()
-    {
-        $container = new Container(self::$objectsStack);
-
-        $this->assertFalse(in_array('test', $container->listServiceIds()));
-    }
-
-    public function testListServicesOnEmptyStack()
-    {
-        $container = new Container();
-
-        $this->assertFalse(in_array('test', $container->listServiceIds()));
-    }
-
-    public function testListServicesOnNonExistedEmptyStack()
-    {
-        $container = new Container(self::$objectsStack);
-
-        $this->assertFalse(in_array('test', $container->listServiceIds()));
-    }
-
-    public function testInitWithoutClosable()
-    {
-        $this->expectException(ContainerServiceInitializationException::class);
-
-        new Container(
+        $container = new Container(
             [
-            self::PLAIN_OBJECT => 'wrong body'
+                'closureDI' => function ($y, $z) {return $z + $y;}
             ]
         );
+
+        $result = $container->getWithParameters('closureDI', [1,2]);
+        $this->assertEquals(3, $result);
     }
 
-    public function testSetter()
+    public function testGetClassWithParameterError()
     {
-        $this->expectException(\TypeError::class);
-
-        $container = new Container();
-        $container->set('test', 'tst');
-    }
-
-    public function testGetOnEmptyStack()
-    {
-        $this->expectException(ContainerNotFoundException::class);
-        $container = new Container();
-        $container->get('test');
-    }
-
-    public function testGetAfterSetMethod()
-    {
-        $value = 123;
-        $container = new Container();
-        $container->set(
-            'test', function () use ($value) {
-                return $value;
-            }
+        $this->expectException(ClassIsNotInstantiableException::class);
+        $container = new Container(
+            [
+                'classDI' => EmptyTestClass::class
+            ]
         );
-        $this->assertEquals($value, $container->get('test'));
+
+        $result = $container->getWithParameters('classDI', ['test']);
     }
 
-    public function testGetAfterSetMethodNonExisted()
+    public function testGetClassWithParameter()
     {
-        $this->expectException(ContainerNotFoundException::class);
-
-        $value = 123;
-        $container = new Container();
-        $container->set(
-            'test', function () use ($value) {
-                return $value;
-            }
+        $container = new Container(
+            [
+                'classDI' => TestClass::class
+            ]
         );
-        $this->assertEquals($value, $container->get('test1'));
+
+        $result = $container->getWithParameters('classDI', ['test']);
+        $this->assertInstanceOf(TestClass::class, $result);
+        $this->assertEquals('test', $result->getMessage());
+    }
+
+
+    public function testGetClassWithParameterRewrite()
+    {
+        $container = new Container(
+            [
+                'classDI' => [TestClass::class, 'not test'],
+            ]
+        );
+
+        $result = $container->getWithParameters('classDI', ['test']);
+        $this->assertInstanceOf(TestClass::class, $result);
+        $this->assertEquals('test', $result->getMessage());
     }
 }

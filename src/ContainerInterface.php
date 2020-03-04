@@ -22,10 +22,19 @@ interface ContainerInterface extends PSRContainerInterface
     /**
      * Sets a dependency
      *
-     * @param string  $id      Service unique id
-     * @param Closure $service Concrete service
+     * @param string $id      Service unique id
+     * @param mixed  $service Concrete service
      *
      * @return void
      */
-    public function set(string $id, Closure $service): void;
+    public function set(string $id, $service): void;
+
+    /**
+     * Get container with constructor parameters or with closure function arguments
+     * @param  string $id
+     * @param  array  $parameters
+     *
+     * @return mixed
+     */
+    public function getWithParameters(string $id, array $parameters);
 }
