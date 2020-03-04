@@ -63,7 +63,11 @@ class ClassInstance implements ContainerInstance
     }
 
     /**
-     * @inheritDoc
+     * Call class constructor with predefined parameters if it possible
+     * or call default constructor
+     *
+     * @return mixed|object
+     * @throws ClassIsNotInstantiableException
      */
     public function call()
     {
@@ -81,7 +85,12 @@ class ClassInstance implements ContainerInstance
     }
 
     /**
-     * @inheritDoc
+     * Call class constructor with parameters
+     *
+     * @param array $parameters constructor arguments
+     *
+     * @return mixed|object
+     * @throws ClassIsNotInstantiableException
      */
     public function callWithParameters(array $parameters = [])
     {
