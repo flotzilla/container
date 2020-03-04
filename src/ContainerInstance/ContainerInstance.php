@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace flotzilla\Container\ContainerInstance;
 
+/**
+ * Interface ContainerInstance for implementing new container parameter types
+ * @package flotzilla\Container\ContainerInstance
+ */
 interface ContainerInstance
 {
     const TYPE_CLOSURE = 'TYPE_CLOSURE';
@@ -17,14 +21,14 @@ interface ContainerInstance
     public function getType();
 
     /**
-     * Call Instance main executor
+     * Call container main executor
      *
      * @return mixed
      */
     public function call();
 
     /**
-     * Call executor with parameters
+     * Call container executor with parameters
      *
      * @param array $parameters parameters to execute with
      *

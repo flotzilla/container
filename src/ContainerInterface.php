@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace flotzilla\Container;
 
-use Closure;
 use Psr\Container\ContainerInterface as PSRContainerInterface;
 
 /**
@@ -31,8 +30,9 @@ interface ContainerInterface extends PSRContainerInterface
 
     /**
      * Get container with constructor parameters or with closure function arguments
-     * @param  string $id
-     * @param  array  $parameters
+     *
+     * @param string $id         Container identifications
+     * @param array  $parameters Parameters to be called with container executor
      *
      * @return mixed
      */

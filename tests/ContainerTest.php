@@ -12,7 +12,6 @@ use flotzilla\Container\Test\TestClass\EmptyTestClass;
 use flotzilla\Container\Test\TestClass\TestClass;
 use flotzilla\Container\Test\TestClass\TestClassWithDependecy;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 
 class ContainerTest extends TestCase
 {

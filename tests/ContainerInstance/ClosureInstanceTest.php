@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace flotzilla\Container\Test\ContainerInstance;
 
 use ArgumentCountError;
-use Closure;
 use flotzilla\Container\ContainerInstance\ClosureInstance;
 use flotzilla\Container\ContainerInstance\ContainerInstance;
 use flotzilla\Container\Test\TestClass\EmptyTestClass;
@@ -88,6 +87,6 @@ class ClosureInstanceTest extends TestCase
             return new TestClass($x);
         });
         $ci->call();
-        $response = $ci->callWithParameters();
+        $ci->callWithParameters();
     }
 }

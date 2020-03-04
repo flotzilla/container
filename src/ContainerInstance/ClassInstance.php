@@ -7,6 +7,11 @@ namespace flotzilla\Container\ContainerInstance;
 use flotzilla\Container\Exceptions\ClassIsNotInstantiableException;
 use ReflectionClass;
 
+/**
+ * Class ClassInstance for handling class container type
+ *
+ * @package flotzilla\Container\ContainerInstance
+ */
 class ClassInstance implements ContainerInstance
 {
     /**
@@ -15,11 +20,15 @@ class ClassInstance implements ContainerInstance
     private $reflectionClass;
 
     /**
+     * Constructor parameters
+     *
      * @var array
      */
     private $parameters = [];
 
     /**
+     * Check if class is not abstract
+     *
      * @var bool
      */
     private $hasConstructor = false;
@@ -27,8 +36,8 @@ class ClassInstance implements ContainerInstance
     /**
      * CallableClass constructor.
      *
-     * @param string $className
-     * @param array $parameters
+     * @param  string $className
+     * @param  array  $parameters
      * @throws \ReflectionException
      * @throws ClassIsNotInstantiableException
      */

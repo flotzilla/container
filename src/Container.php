@@ -69,6 +69,8 @@ class Container implements ContainerInterface, \Countable
     }
 
     /**
+     * Init container dependencies from settings array
+     *
      * @param string $id
      * @param array $parameters
      * @throws \ReflectionException
@@ -89,6 +91,8 @@ class Container implements ContainerInterface, \Countable
     }
 
     /**
+     * Init container dependency by string
+     *
      * @param string $id
      * @param string $className
      * @return ContainerInstance
@@ -158,6 +162,8 @@ class Container implements ContainerInterface, \Countable
     }
 
     /**
+     * Search dependencies for container and call it with params
+     *
      * @param string $id
      * @return mixed
      */
