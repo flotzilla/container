@@ -11,7 +11,7 @@ Dependency injection PHP FIG PSR-11 container implementation
 via Composer
 
 ```bash
-$ composer install flotzilla/container
+$ composer require flotzilla/container
 ```
 
 ## Usage
