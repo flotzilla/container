@@ -35,5 +35,4 @@ interface ContainerInstance
      * @return mixed
      */
     public function setParameters(array $parameters);
-
 }

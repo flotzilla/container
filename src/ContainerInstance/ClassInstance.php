@@ -26,6 +26,7 @@ class ClassInstance implements ContainerInstance
 
     /**
      * CallableClass constructor.
+     *
      * @param string $className
      * @param array $parameters
      * @throws \ReflectionException
@@ -59,8 +60,10 @@ class ClassInstance implements ContainerInstance
      */
     public function call()
     {
-        if (!$this->hasConstructor && $this->parameters){
-            throw new ClassIsNotInstantiableException("Class {$this->reflectionClass->getName()} cannot be called with arguments");
+        if (!$this->hasConstructor && $this->parameters) {
+            throw new ClassIsNotInstantiableException(
+                "Class {$this->reflectionClass->getName()} cannot be called with arguments"
+            );
         }
 
         if ($this->hasConstructor && $this->parameters) {
@@ -72,8 +75,10 @@ class ClassInstance implements ContainerInstance
 
     public function callWithParameters(array $parameters = [])
     {
-        if(!$this->hasConstructor){
-            throw new ClassIsNotInstantiableException("Class {$this->reflectionClass->getName()} cannot be called with arguments");
+        if (!$this->hasConstructor) {
+            throw new ClassIsNotInstantiableException(
+                "Class {$this->reflectionClass->getName()} cannot be called with arguments"
+            );
         }
 
         if ($this->hasConstructor && $parameters) {
@@ -83,11 +88,17 @@ class ClassInstance implements ContainerInstance
         return $this->call();
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getParameters(): array
     {
         return $this->parameters;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function setParameters(array $parameters)
     {
         $this->parameters = $parameters;
