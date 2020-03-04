@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace flotzilla\Container\Test\ContainerInstance;
 
 use flotzilla\Container\ContainerInstance\ClassInstance;
