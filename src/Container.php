@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace flotzilla\Container;
 
+use ArgumentCountError;
 use Closure;
+use Exception;
 use flotzilla\Container\ContainerInstance\ClassInstance;
 use flotzilla\Container\ContainerInstance\ClosureInstance;
 use flotzilla\Container\ContainerInstance\ContainerInstance;
+use flotzilla\Container\Exceptions\ClassIsNotInstantiableException;
 use flotzilla\Container\Exceptions\ContainerNotFoundException;
 use flotzilla\Container\Exceptions\ContainerServiceInitializationException;
+use ReflectionException;
 
 /**
  * PSR-11 compliant container implementation
@@ -30,10 +34,9 @@ class Container implements ContainerInterface, \Countable
 
     /**
      * Container constructor.
-     *
      * @param array $containerServices
-     * @throws Exceptions\ClassIsNotInstantiableException
-     * @throws \ReflectionException
+     *
+     * @throws ContainerServiceInitializationException
      */
     public function __construct(array $containerServices = [])
     {
@@ -43,9 +46,11 @@ class Container implements ContainerInterface, \Countable
     }
 
     /**
-     * @inheritdoc
-     * @throws \ReflectionException
-     * @throws Exceptions\ClassIsNotInstantiableException
+     * @param string $id
+     * @param mixed $serviceParameters
+     * @param bool $rewrite
+     *
+     * @throws ContainerServiceInitializationException
      */
     public function set(string $id, $serviceParameters, bool $rewrite = false): void
     {
@@ -53,18 +58,20 @@ class Container implements ContainerInterface, \Countable
             throw new ContainerServiceInitializationException("Service {$id} is already in container stack");
         }
 
-        if ($serviceParameters instanceof Closure) {
-            $this->containerFactories[$id] = new ClosureInstance($serviceParameters);
-        } else if (is_array($serviceParameters)) {
-            $this->initFromArray($id, $serviceParameters);
-        } else if (is_string($serviceParameters)) {
-            $this->initFromString($id, $serviceParameters);
-        } else {
-            throw new ContainerServiceInitializationException("Service {$id} cannot be instanced with current parameters");
-        }
+        try {
+            if ($serviceParameters instanceof Closure) {
+                $this->containerFactories[$id] = new ClosureInstance($serviceParameters);
+            } else if (is_array($serviceParameters)) {
+                $this->initFromArray($id, $serviceParameters);
+            } else if (is_string($serviceParameters)) {
+                $this->initFromString($id, $serviceParameters);
+            } else {
+                throw new ContainerServiceInitializationException("Service {$id} cannot be instanced with current parameters");
+            }
 
-        if ($rewrite) {
             unset($this->services[$id]);
+        } catch (ReflectionException | ClassIsNotInstantiableException | Exception $e) {
+            throw new ContainerServiceInitializationException($e->getMessage());
         }
     }
 
@@ -73,8 +80,8 @@ class Container implements ContainerInterface, \Countable
      *
      * @param string $id
      * @param array $parameters
-     * @throws \ReflectionException
-     * @throws Exceptions\ClassIsNotInstantiableException
+     * @throws ReflectionException
+     * @throws ClassIsNotInstantiableException
      */
     private function initFromArray(string $id, array $parameters)
     {
@@ -96,8 +103,8 @@ class Container implements ContainerInterface, \Countable
      * @param string $id
      * @param string $className
      * @return ContainerInstance
-     * @throws \ReflectionException
-     * @throws Exceptions\ClassIsNotInstantiableException
+     * @throws ReflectionException
+     * @throws ClassIsNotInstantiableException
      */
     private function initFromString(string $id, string $className): ContainerInstance
     {
@@ -123,7 +130,9 @@ class Container implements ContainerInterface, \Countable
     }
 
     /**
-     * @inheritdoc
+     * @param string $id
+     * @return mixed
+     * @throws ClassIsNotInstantiableException
      */
     public function get($id)
     {
@@ -141,8 +150,14 @@ class Container implements ContainerInterface, \Countable
         return $service;
     }
 
+
     /**
-     * @inheritdoc
+     * @param string $id
+     * @param array $parameters
+     * @return mixed
+     *
+     * @throws ClassIsNotInstantiableException
+     * @throws ArgumentCountError
      */
     public function getWithParameters(string $id, array $parameters)
     {
@@ -166,6 +181,9 @@ class Container implements ContainerInterface, \Countable
      *
      * @param string $id
      * @return mixed
+     *
+     * @throws ClassIsNotInstantiableException
+     * @throws ArgumentCountError
      */
     private function getFromFactory(string $id)
     {
