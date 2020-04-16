@@ -5,7 +5,7 @@ Dependency injection PHP FIG PSR-11 container implementation
 
 ## Requirements
 
-`php > 7.1`
+`php >= 7.1`
 
 ## Install
 via Composer
